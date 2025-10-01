@@ -49,7 +49,7 @@
   services.xserver.enable = true;
 
   # services.vmwareGuest.enable = true;
-  virtualisation.vmware.guest.enable = true;
+  # virtualisation.vmware.guest.enable = true;
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
