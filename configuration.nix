@@ -45,21 +45,14 @@
     LC_TIME = "ko_KR.UTF-8";
   };
 
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
+  i18n.inputMethod = {
+    enable = true;
+    type = "ibus";
+    ibus.engines = with pkgs.ibus-engines; [ hangul ];
+  };
 
   # services.vmwareGuest.enable = true;
   # virtualisation.vmware.guest.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome.enable = true;
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
-  };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -125,6 +118,27 @@
   # };
 
   # List services that you want to enable:
+  services.xserver = {
+    enable = true;
+    displayManager.gdm = {
+      enable = true;
+      wayland = true;
+    };
+
+    desktopManager.gnome = {
+      enable = true;
+      extraGSettingsOverridePackages = with pkgs; [ mutter ];
+      extraGSettingsOverrides = ''
+        [org.gnome.mutter]
+        experimental-features=['scale-monitor-framebuffer']
+      '';
+    };
+
+    # xkb = {
+    #   layout = "ibus";
+    #   variant = "hangul";
+    # };
+  };
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
@@ -149,8 +163,21 @@
     noto-fonts-emoji
     nerd-fonts._0xproto
     nerd-fonts._3270
+    nerd-fonts.d2coding # Hangul fallback
   ];
 
   services.tailscale.enable = true;
-
+  environment.gnome.excludePackages = with pkgs; [
+    epiphany
+    gedit
+    yelp
+    geary
+    gnome-tour
+    gnome-maps
+    gnome-music
+    gnome-weather
+    gnome-contacts
+    gnome-terminal
+    xterm
+  ];
 }

@@ -9,12 +9,17 @@
     ranger
     ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
     tailscale
+    # gnome
+    gnomeExtensions.pano
+    gnomeExtensions.tailscale-qs
 
     ripgrep
     fzf
     fd
     zip
     unzip
+    lshw
+    eza
     
     btop
     lazygit
@@ -32,6 +37,14 @@
     };
   };
 
+  dconf.settings = {
+    "org/gnome/desktop/input-sources" = {
+      sources = [
+        (lib.hm.gvariant.mkTuple [ "ibus" "hangul" ])
+      ];
+    };
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -39,6 +52,12 @@
     syntaxHighlighting.enable = true;
 
     history.size = 10000;
+
+    shellAliases = {
+      ls = "eza";
+    };
+
+    initContent = "${pkgs.fastfetch}/bin/fastfetch";
 
     oh-my-zsh = {
       enable = true;
