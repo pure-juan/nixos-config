@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ghostty, ... }:
+{ config, lib, services, pkgs, ghostty, ... }:
 
 {
   home.username = "zzio";
@@ -6,12 +6,15 @@
 
   home.packages = with pkgs; [
     fastfetch
-    nnn
+    ranger
     ghostty.packages.${pkgs.stdenv.hostPlatform.system}.default
+    tailscale
 
     ripgrep
     fzf
     fd
+    zip
+    unzip
     
     btop
     lazygit
@@ -131,6 +134,7 @@
     "${parsers}/parser";
 
   xdg.configFile."nvim/lua".source = config.lib.file.mkOutOfStoreSymlink ./nvim/lua;
+  xdg.configFile."ghostty".source = config.lib.file.mkOutOfStoreSymlink ./ghostty;
 
 
   home.stateVersion = "25.05";

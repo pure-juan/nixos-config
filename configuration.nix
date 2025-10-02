@@ -151,4 +151,6 @@
     nerd-fonts._3270
   ];
 
+  services.tailscale.enable = true;
+
 }
