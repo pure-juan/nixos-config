@@ -7,12 +7,19 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixvim = {
+      url = "github:nix-community/nixvim";
+      # inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nvix = {
+      url = "github:niksingh710/nvix";
+    };
     ghostty = {
-      url = "github:ghostty-org/ghostty";
+      url = "github:ghostty-org/ghostty/v1.2.2";
     };
   };
 
-  outputs = inputs@{ nixpkgs, ghostty, home-manager, ... }: {
+  outputs = inputs@{ nixpkgs, nixvim, nvix, ghostty, home-manager, ... }: {
     nixosConfigurations = {
       "zzio-vm-arm64" = nixpkgs.lib.nixosSystem {
         system = "aarch64-linux";
@@ -24,7 +31,8 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = {
-              inherit ghostty;
+              inherit inputs;
+              inherit nixpkgs;
             };
             home-manager.users.zzio = import ./home.nix;
           }
@@ -40,7 +48,8 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = {
-              inherit ghostty;
+              inherit inputs;
+              inherit nixpkgs;
             };
             home-manager.users.zzio = import ./home.nix;
           }

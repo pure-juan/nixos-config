@@ -134,6 +134,10 @@
       '';
     };
 
+    excludePackages = with pkgs; [
+      xterm
+    ];
+
     # xkb = {
     #   layout = "ibus";
     #   variant = "hangul";
@@ -178,6 +182,5 @@
     gnome-weather
     gnome-contacts
     gnome-terminal
-    xterm
   ];
 }
