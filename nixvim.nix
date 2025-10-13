@@ -29,8 +29,8 @@ in {
           jsonls.enable = true;
           rust_analyzer = {
             enable = true;
-            installCargo = true;
-            installRustc = true;
+            installCargo = false;
+            installRustc = false;
           };
           ts_ls.enable = true;
           lua_ls.enable = true;

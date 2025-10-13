@@ -23,6 +23,7 @@
     unzip
     lshw
     eza
+    pkg-config
     yt-dlp
     
     btop
@@ -32,6 +33,9 @@
     go
     nodejs_22
     pnpm
+    rustc
+    cargo
+    rust-analyzer
     python314
     tree-sitter
     claude-code
@@ -52,6 +56,11 @@
     };
   };
 
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -62,6 +71,7 @@
 
     shellAliases = {
       ls = "eza";
+      reload = "sudo nixos-rebuild switch";
     };
 
     initContent = "${pkgs.fastfetch}/bin/fastfetch";
