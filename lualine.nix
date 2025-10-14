@@ -3,249 +3,138 @@
   
   settings = {
     options = {
-      theme = {
-        normal = {
-          c = {
-            fg = "#bbc2cf";
-            bg = "#202328";
-          };
-        };
-        inactive = {
-          c = {
-            fg = "#bbc2cf";
-            bg = "#202328";
-          };
-        };
+      theme = "auto";
+      globalstatus = true;
+      disabled_filetypes = {
+        statusline = [ "dashboard" "alpha" "ministarter" ];
       };
-      component_separators = "";
-      section_separators = "";
+      component_separators = { left = ""; right = ""; };
+      section_separators = { left = ""; right = ""; };
     };
     
     sections = {
-      lualine_a = [];
-      lualine_b = [];
-      lualine_y = [];
-      lualine_z = [];
+      lualine_a = [ "mode" ];
+      lualine_b = [ "branch" ];
       
       lualine_c = [
-        # Left edge indicator
+        # 현재 작업 디렉토리
         {
           __unkeyed-1 = {
             __raw = ''
               function()
-                return "▊"
+                local root = vim.fn.getcwd()
+                return vim.fn.fnamemodify(root, ":t")
               end
             '';
           };
-          color = { fg = "#51afef"; };
-          padding = { left = 0; right = 1; };
+          icon = "󱉭";
         }
         
-        # # Mode indicator
-        # {
-        #   __unkeyed-1 = {
-        #     __raw = ''
-        #       function()
-        #         return ""
-        #       end
-        #     '';
-        #   };
-        #   color = {
-        #     __raw = ''
-        #       function()
-        #         local mode_color = {
-        #           n = '#ec5f67',        -- Normal
-        #           i = '#98be65',        -- Insert
-        #           v = '#51afef',        -- Visual
-        #           ['\22'] = '#51afef',  -- Visual Block (Ctrl-V)
-        #           V = '#51afef',        -- Visual Line
-        #           c = '#c678dd',        -- Command
-        #           no = '#ec5f67',       -- Operator Pending
-        #           s = '#FF8800',        -- Select
-        #           S = '#FF8800',        -- Select Line
-        #           ['\19'] = '#FF8800',  -- Select Block (Ctrl-S)
-        #           ic = '#ECBE7B',       -- Insert completion
-        #           R = '#a9a1e1',        -- Replace
-        #           Rv = '#a9a1e1',       -- Virtual Replace
-        #           cv = '#ec5f67',       -- Ex mode
-        #           ce = '#ec5f67',       -- Normal Ex
-        #           r = '#008080',        -- Hit-enter prompt
-        #           rm = '#008080',       -- More prompt
-        #           ['r?'] = '#008080',   -- Confirm query
-        #           ['!'] = '#ec5f67',    -- Shell executing
-        #           t = '#ec5f67',        -- Terminal
-        #         }
-        #         return { fg = mode_color[vim.fn.mode()] }
-        #       end
-        #     '';
-        #   };
-        #   padding = { right = 1; };
-        # }
-        
-        # Filesize
+        # Diagnostics
         {
-          __unkeyed-1 = "filesize";
-          cond = {
-            __raw = ''
-              function()
-                return vim.fn.empty(vim.fn.expand('%:t')) ~= 1
-              end
-            '';
+          __unkeyed-1 = "diagnostics";
+          symbols = {
+            error = " ";
+            warn = " ";
+            info = " ";
+            hint = " ";
           };
+        }
+        
+        # Filetype icon
+        {
+          __unkeyed-1 = "filetype";
+          icon_only = true;
+          separator = "";
+          padding = { left = 1; right = 0; };
         }
         
         # Filename
         {
           __unkeyed-1 = "filename";
-          cond = {
+          path = 1;
+          symbols = {
+            modified = " ●";
+            readonly = " ";
+            unnamed = "";
+          };
+        }
+      ];
+      
+      lualine_x = [
+        # Git diff (gitsigns 필요)
+        {
+          __unkeyed-1 = "diff";
+          symbols = {
+            added = " ";
+            modified = " ";
+            removed = " ";
+          };
+          source = {
             __raw = ''
               function()
-                return vim.fn.empty(vim.fn.expand('%:t')) ~= 1
+                local gitsigns = vim.b.gitsigns_status_dict
+                if gitsigns then
+                  return {
+                    added = gitsigns.added,
+                    modified = gitsigns.changed,
+                    removed = gitsigns.removed,
+                  }
+                end
               end
             '';
           };
-          color = { fg = "#c678dd"; gui = "bold"; };
         }
         
-        # # Location
-        # "location"
-        
-        # # Progress
-        # {
-        #   __unkeyed-1 = "progress";
-        #   color = { fg = "#bbc2cf"; gui = "bold"; };
-        # }
-        
-        # # Diagnostics
-        # {
-        #   __unkeyed-1 = "diagnostics";
-        #   sources = [ "nvim_diagnostic" ];
-        #   symbols = {
-        #     error = " ";
-        #     warn = " ";
-        #     info = " ";
-        #   };
-        #   diagnostics_color = {
-        #     error = { fg = "#ec5f67"; };
-        #     warn = { fg = "#ECBE7B"; };
-        #     info = { fg = "#008080"; };
-        #   };
-        # }
-        
-        # Center separator
+        # LSP 서버 이름
         {
           __unkeyed-1 = {
             __raw = ''
               function()
-                return '%='
+                local clients = vim.lsp.get_clients()
+                if next(clients) == nil then
+                  return ""
+                end
+                local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
+                for _, client in ipairs(clients) do
+                  local filetypes = client.config.filetypes
+                  if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
+                    return "  " .. client.name
+                  end
+                end
+                return ""
               end
             '';
           };
         }
       ];
       
-      lualine_x = [
-        # LSP server name
+      lualine_y = [
+        {
+          __unkeyed-1 = "progress";
+          separator = " ";
+          padding = { left = 1; right = 0; };
+        }
+        {
+          __unkeyed-1 = "location";
+          padding = { left = 0; right = 1; };
+        }
+      ];
+      
+      lualine_z = [
+        # 시계
         {
           __unkeyed-1 = {
             __raw = ''
               function()
-                local msg = 'No Active Lsp'
-                local buf_ft = vim.api.nvim_get_option_value('filetype', { buf = 0 })
-                local clients = vim.lsp.get_clients()
-                if next(clients) == nil then
-                  return msg
-                end
-                for _, client in ipairs(clients) do
-                  local filetypes = client.config.filetypes
-                  if filetypes and vim.fn.index(filetypes, buf_ft) ~= -1 then
-                    return client.name
-                  end
-                end
-                return msg
+                return " " .. os.date("%R")
               end
             '';
           };
-          icon = " LSP:";
-          color = { fg = "#ffffff"; gui = "bold"; };
-        }
-        # Encoding
-        {
-          __unkeyed-1 = "encoding";
-          fmt = {
-            __raw = "string.upper";
-          };
-          cond = {
-            __raw = ''
-              function()
-                return vim.fn.winwidth(0) > 80
-              end
-            '';
-          };
-          color = { fg = "#98be65"; gui = "bold"; };
-        }
-        
-        # File format
-        {
-          __unkeyed-1 = "fileformat";
-          fmt = {
-            __raw = "string.upper";
-          };
-          icons_enabled = false;
-          color = { fg = "#98be65"; gui = "bold"; };
-        }
-        
-        # # Git branch
-        # {
-        #   __unkeyed-1 = "branch";
-        #   icon = "";
-        #   color = { fg = "#a9a1e1"; gui = "bold"; };
-        # }
-        
-        # # Diff
-        # {
-        #   __unkeyed-1 = "diff";
-        #   symbols = {
-        #     added = " ";
-        #     modified = "󰝤 ";
-        #     removed = " ";
-        #   };
-        #   diff_color = {
-        #     added = { fg = "#98be65"; };
-        #     modified = { fg = "#FF8800"; };
-        #     removed = { fg = "#ec5f67"; };
-        #   };
-        #   cond = {
-        #     __raw = ''
-        #       function()
-        #         return vim.fn.winwidth(0) > 80
-        #       end
-        #     '';
-        #   };
-        # }
-        
-        # Right edge indicator
-        {
-          __unkeyed-1 = {
-            __raw = ''
-              function()
-                return '▊'
-              end
-            '';
-          };
-          color = { fg = "#51afef"; };
-          padding = { left = 1; };
         }
       ];
     };
     
-    inactive_sections = {
-      lualine_a = [];
-      lualine_b = [];
-      lualine_y = [];
-      lualine_z = [];
-      lualine_c = [];
-      lualine_x = [];
-    };
+    extensions = [ "neo-tree" "fzf" ];
   };
 }
